@@ -1,6 +1,8 @@
 # CS5800-Fall-2023-Project
-Algorithms Project Repo for Fall 2023 course CS5800: 
+Algorithms Project Repo for Fall 2023: 
+
 Project Topic: Healthcare Resource Allocation
+
 Project Team: Krutik Bajariya, Rahil Jhaveri, Jheel Kamdar
 
 # Abstract
