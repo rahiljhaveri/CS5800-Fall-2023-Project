@@ -9,13 +9,10 @@ def read_data():
     df = df[df['STATE'] == 'ME']
     return df
 
-def connected_nodes():
-    adj_list = {}
-    for i in range(49):
-        x = list(range(0, 49))
-        x.remove(i)
-        adj_list[i] = random.sample(x, 10)
-    return adj_list
+
+def calculate_distance(coord1, coord2):
+    return geodesic(coord1, coord2).miles
+
         
 def indexed_hosp(df):
     index_hosp = df[['NAME', 'LATITUDE', 'LONGITUDE']].sort_values(
@@ -23,23 +20,30 @@ def indexed_hosp(df):
     ).values.tolist()
     return index_hosp
 
-def calculate_distance(coord1, coord2):
-    return geodesic(coord1, coord2).miles
 
-def weighted_adjmatrix(adj_list, index_hosp, nodes=range(49)):
+def create_adj_list(index_hosp):
+    adj_list = {}
+    for i in range(len(index_hosp)):
+        x = list(range(0, 49))
+        x.remove(i)
+        random.seed(42)
+        adj_list[i] = {
+            r: calculate_distance((index_hosp[i][1], index_hosp[i][2]), (index_hosp[r][1], index_hosp[r][2])) 
+            for r in random.sample(x, 10)
+        }
+    return adj_list
+
+
+def create_adjmatrix(adj_list):
     '''
     Returns a (weighted) adjacency matrix as a NumPy array.
     '''
-    adj_mat = np.full(shape= (49,49), fill_value=9999, dtype=float)
-    for node in nodes:
-        weights = {
-            endnode: calculate_distance(
-                (index_hosp[node][1], index_hosp[node][2]), (index_hosp[endnode][1], index_hosp[endnode][2])
-            ) for endnode in adj_list.get(node, {})
-        }
-        for endnode, val in weights.items():
-            adj_mat[node][endnode] = val
-            adj_mat[endnode][node] = val 
+    total_nodes = len(adj_list)
+    adj_mat = np.full(shape = (total_nodes, total_nodes), fill_value=float('inf'), dtype=float)
+    for node, edge in adj_list.items():
+        for conn, val in edge.items():
+            adj_mat[node][conn] = val
+            adj_mat[conn][node] = val 
         adj_mat[node][node] = 0
     
     return adj_mat
