@@ -21,20 +21,20 @@ def indexed_hosp(df):
     return index_hosp
 
 
-def create_adj_list(index_hosp):
+def create_adj_list(index_hosp, n_edges):
     adj_list = {}
     for i in range(len(index_hosp)):
-        x = list(range(0, 49))
+        x = list(range(0, len(index_hosp)))
         x.remove(i)
         random.seed(42)
         adj_list[i] = {
             r: calculate_distance((index_hosp[i][1], index_hosp[i][2]), (index_hosp[r][1], index_hosp[r][2])) 
-            for r in random.sample(x, 10)
+            for r in random.sample(x, n_edges)
         }
     return adj_list
 
 
-def create_adjmatrix(adj_list):
+def create_adj_matrix(adj_list):
     '''
     Returns a (weighted) adjacency matrix as a NumPy array.
     '''

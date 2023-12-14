@@ -1,7 +1,11 @@
-import heapq
 import sys
 
-def min_distance_node(dist, shortest_path_nodes):
+def minDistanceNode(dist, shortest_path_nodes):
+    '''
+    the dist list is used to check for the minimum distance 
+    and return the node having that min distance if it is 
+    not already a part of the shortest path nodes set
+    '''
     min_dist = sys.maxsize
     
     for u in range(len(dist)):
@@ -12,30 +16,48 @@ def min_distance_node(dist, shortest_path_nodes):
     return min_node
 
 
-def dijkstra(adj_mat, src):
-    dist = [sys.maxsize] * len(adj_mat)
+def dijkstraWithPath(adj_mat, src):
+    '''
+    the dijkstra's single source shortest path algorithm is implemented
+    on a graph represented as an adjacency matrix provided a source node.
+    '''
+    
+    total_nodes = len(adj_mat)
+    dist = [sys.maxsize] * total_nodes
     dist[src] = 0
-    shortest_path_nodes = [False] * len(adj_mat)
+    shortest_path_nodes = [False] * total_nodes
+    parent_node = [src] * total_nodes
 
-    for _ in range(49):
-        x = min_distance_node(dist, shortest_path_nodes)
+    for _ in range(total_nodes):
+        x = minDistanceNode(dist, shortest_path_nodes)
 
         shortest_path_nodes[x] = True
 
-        for y in range(49):
+        for y in range(total_nodes):
             dd = dist[x] + adj_mat[x][y]
             if adj_mat[x][y] > 0 and shortest_path_nodes[y] == False and dist[y] > dd:
                 dist[y] = dd
+                parent_node[y] = x
                 
-    return dist
+    return dist, parent_node
 
 
-def floydWarshall(graph, nodes=49):
-    distance_matrix = list(map(lambda i: list(map(lambda j: j, i)), graph))
- 
-    for k in range(nodes):
-        for i in range(nodes):
-            for j in range(nodes):
-                distance_matrix[i][j] = min(distance_matrix[i][j], distance_matrix[i][k] + distance_matrix[k][j])
+def floydWarshallWithPath(adj_mat):
+    '''
+    Floyd Warshall is an all source shortest path algorithm implemented on a graph
+    represented as an adjacency matrix.
+    This function returns the shortest path value and a back-tracked parent path.
+    '''
     
-    return distance_matrix
+    total_nodes = len(adj_mat)
+    distance_matrix = list(map(lambda i: list(map(lambda j: j, i)), adj_mat))
+    path_parent_matrix = [[i] * total_nodes for i in range(total_nodes)]
+ 
+    for k in range(total_nodes):
+        for i in range(total_nodes):
+            for j in range(total_nodes):
+                if distance_matrix[i][k] + distance_matrix[k][j] < distance_matrix[i][j]:
+                    path_parent_matrix[i][j] = k
+                    distance_matrix[i][j] = distance_matrix[i][k] + distance_matrix[k][j]
+    
+    return distance_matrix, path_parent_matrix
