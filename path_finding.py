@@ -61,3 +61,18 @@ def floydWarshallWithPath(adj_mat):
                     distance_matrix[i][j] = distance_matrix[i][k] + distance_matrix[k][j]
     
     return distance_matrix, path_parent_matrix
+
+
+def pathFromSource(path_array, src):
+    '''
+    returns the path from the source given an array to all destination nodes
+    '''
+    pts = [-1] * len(path_array)
+    for i in range(len(path_array)):
+        k = i
+        pts[i] = [i]
+        while path_array[k] != src:
+            pts[i].append(path_array[k])
+            k = path_array[k]
+        pts[i].append(src)
+    return pts
